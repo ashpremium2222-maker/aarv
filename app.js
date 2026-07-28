@@ -65,12 +65,12 @@ const State={
   accent:'gold',
   view:'dashboard',
   user:{name:'Ashtu'},
-  xp:340,
+  xp:0,
   onboarded:false,
   seenOnboarding:false,
   toasts:[],
-  water:5, waterGoal:8,
-  sleepHrs:6.5, sleepGoal:8,
+  water:0, waterGoal:8,
+  sleepHrs:0, sleepGoal:8,
   habits:[
     {id:uid(),name:'Morning meditation',icon:'🧘',color:'violet',freq:'daily',streak:6,best:11,history:mkHistory([0,1,2,3,4,6,7,8]),reminder:'7:00 AM'},
     {id:uid(),name:'Read 20 pages',icon:'📚',color:'gold',freq:'daily',streak:3,best:14,history:mkHistory([0,1,2,5,6]),reminder:'9:00 PM'},
@@ -176,8 +176,8 @@ function applyLoadedData(data) {
     State.sleepGoal = data.profile.sleep_goal || 8;
     State.theme = data.profile.theme || 'dark';
     State.accent = data.profile.accent || 'gold';
-    State.water = data.profile.water ?? 5;
-    State.sleepHrs = data.profile.sleep_hrs ?? 6.5;
+    State.water = data.profile.water ?? 0;
+    State.sleepHrs = data.profile.sleep_hrs ?? 0;
     State.seenOnboarding = data.profile.seen_onboarding || false;
     if (data.profile.badges) {
       State.badges = typeof data.profile.badges === 'string'
@@ -367,12 +367,12 @@ function wellnessScore(){
   const w=clamp(Math.round((State.water/State.waterGoal)*100),0,100);
   const s=clamp(Math.round((State.sleepHrs/State.sleepGoal)*100),0,100);
   const lastMood=State.moods[State.moods.length-1];
-  const m=lastMood? Math.round(((lastMood.energy+ (10-lastMood.stress))/20)*100) : 60;
+  const m=lastMood? Math.round(((lastMood.energy+ (10-lastMood.stress))/20)*100) : 0;
   return Math.round((w+s+m)/3);
 }
 function productivityScore(){
-  const t=State.tasks.length? Math.round(State.tasks.filter(t=>t.done).length/State.tasks.length*100) : 50;
-  const h=State.habits.length? Math.round(habitsDoneCount()/State.habits.length*100) : 50;
+  const t=State.tasks.length? Math.round(State.tasks.filter(t=>t.done).length/State.tasks.length*100) : 0;
+  const h=State.habits.length? Math.round(habitsDoneCount()/State.habits.length*100) : 0;
   return Math.round((t+h)/2);
 }
 function dailyScore(){return Math.round((wellnessScore()+productivityScore()+goalsAvgProgress())/3);}
