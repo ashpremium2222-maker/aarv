@@ -1367,8 +1367,18 @@ function bindView(){
   const imp=document.getElementById('importFile'); if(imp) imp.addEventListener('change',importData);
   const rst=document.getElementById('resetBtn'); if(rst) rst.onclick=async()=>{
     if(confirm('Permanently delete ALL your data from the server? This cannot be undone.')){
-      try{ await clearAllUserData(State._userId); toast('All data reset'); location.reload(); }
-      catch(e){ toast('Reset failed: '+e.message,'error'); }
+      try{
+        await clearAllUserData(State._userId);
+        State.xp=0; State.water=0; State.sleepHrs=0;
+        State.habits=[]; State.goals=[]; State.tasks=[];
+        State.journal=[]; State.moods=[]; State.notes=[];
+        State.focusSessions=[]; State.seenOnboarding=false;
+        State.badges=State.badges.map(b=>({...b,earned:false}));
+        await saveAllUserData(State._userId, State);
+        toast('All data reset');
+        await new Promise(r=>setTimeout(r,500));
+        location.reload();
+      }catch(e){ toast('Reset failed: '+e.message,'error'); }
     }
   };
   const so=document.getElementById('signOutBtn'); if(so) so.onclick=async()=>{

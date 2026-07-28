@@ -104,8 +104,8 @@ async function createProfile(userId, name) {
 window.clearAllUserData = async function clearAllUserData(userId) {
   const tables = ['habits','goals','tasks','journal_entries','mood_logs','notes','focus_sessions'];
   await Promise.all(tables.map(t => supabase.from(t).delete().eq('user_id', userId)));
-  await saveProfile(userId, {
-    name: 'User', xp: 0, water: 0, sleep_hrs: 0,
+  const { error } = await supabase.from('profiles').upsert({
+    id: userId, name: 'User', xp: 0, water: 0, sleep_hrs: 0,
     water_goal: 8, sleep_goal: 8, theme: 'dark', accent: 'gold',
     seen_onboarding: false,
     badges: JSON.stringify([
@@ -118,7 +118,8 @@ window.clearAllUserData = async function clearAllUserData(userId) {
       { id:'b7', name:'Deep Focus x10', ic:'🎧', earned:false },
       { id:'b8', name:'Level 10', ic:'👑', earned:false },
     ])
-  });
+  }, { onConflict: 'id' });
+  if (error) throw error;
 };
 
 async function loadData(table, userId) {
