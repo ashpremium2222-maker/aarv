@@ -1,12 +1,14 @@
 /* ============================================================
    ASCENT — Supabase integration
-   Auth + data persistence layer
+   Auth + data persistence layer (ES module)
    ============================================================ */
+
+import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://kaofacrqwcevsqyywrdi.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imthb2ZhY3Jxd2NldnNxeXl3cmRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUyNjA2NzYsImV4cCI6MjEwMDgzNjY3Nn0.XdKi2GaUwQXVxe9tiWxG-fSaSELq2lfj3aH0rhcIKfM';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
@@ -17,30 +19,30 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 /* ============================================================
    AUTH
    ============================================================ */
-async function signUp(email, password) {
+window.signUp = async function signUp(email, password) {
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) throw error;
   return data;
-}
+};
 
-async function signIn(email, password) {
+window.signIn = async function signIn(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
   return data;
-}
+};
 
-async function signOut() {
+window.signOut = async function signOut() {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
-}
+};
 
-function getSession() {
+window.getSession = function getSession() {
   return supabase.auth.getSession();
-}
+};
 
-function onAuthStateChange(callback) {
+window.onAuthStateChange = function onAuthStateChange(callback) {
   return supabase.auth.onAuthStateChange(callback);
-}
+};
 
 /* ============================================================
    DATA LOADING
@@ -123,7 +125,6 @@ async function deleteRecord(table, id) {
 }
 
 async function replaceAllRecords(table, userId, records) {
-  // Delete all existing then insert new ones
   const { error: delError } = await supabase
     .from(table)
     .delete()
@@ -142,7 +143,7 @@ async function replaceAllRecords(table, userId, records) {
 /* ============================================================
    FULL DATA LOAD (loads all user data into State)
    ============================================================ */
-async function loadAllUserData(userId) {
+window.loadAllUserData = async function loadAllUserData(userId) {
   const profile = await loadProfile(userId);
 
   const [habits, goals, tasks, journal, moods, notes, focusSessions] = await Promise.all([
@@ -183,12 +184,12 @@ async function loadAllUserData(userId) {
     })),
     focusSessions
   };
-}
+};
 
 /* ============================================================
    FULL DATA SAVE (saves current State to Supabase)
    ============================================================ */
-async function saveAllUserData(userId, State) {
+window.saveAllUserData = async function saveAllUserData(userId, State) {
   await saveProfile(userId, {
     name: State.user.name,
     xp: State.xp,
@@ -220,79 +221,85 @@ async function saveAllUserData(userId, State) {
     }))),
     replaceAllRecords('focus_sessions', userId, State.focusSessions)
   ]);
-}
+};
 
 /* ============================================================
    INCREMENTAL SAVE (save individual record changes)
    ============================================================ */
-async function saveHabit(userId, habit) {
+window.saveHabit = async function saveHabit(userId, habit) {
   await upsertRecord('habits', {
     ...habit,
     user_id: userId,
     history: JSON.stringify(habit.history)
   });
-}
+};
 
-async function deleteHabit(id) {
+window.deleteHabit = async function deleteHabit(id) {
   await deleteRecord('habits', id);
-}
+};
 
-async function saveGoal(userId, goal) {
+window.saveGoal = async function saveGoal(userId, goal) {
   await upsertRecord('goals', {
     ...goal,
     user_id: userId,
     milestones: JSON.stringify(goal.milestones)
   });
-}
+};
 
-async function deleteGoal(id) {
+window.deleteGoal = async function deleteGoal(id) {
   await deleteRecord('goals', id);
-}
+};
 
-async function saveTask(userId, task) {
+window.saveTask = async function saveTask(userId, task) {
   await upsertRecord('tasks', {
     ...task,
     user_id: userId
   });
-}
+};
 
-async function deleteTask(id) {
+window.deleteTask = async function deleteTask(id) {
   await deleteRecord('tasks', id);
-}
+};
 
-async function saveJournalEntry(userId, entry) {
+window.saveJournalEntry = async function saveJournalEntry(userId, entry) {
   await upsertRecord('journal_entries', {
     ...entry,
     user_id: userId
   });
-}
+};
 
-async function deleteJournalEntry(id) {
+window.deleteJournalEntry = async function deleteJournalEntry(id) {
   await deleteRecord('journal_entries', id);
-}
+};
 
-async function saveMoodLog(userId, mood) {
+window.saveMoodLog = async function saveMoodLog(userId, mood) {
   await upsertRecord('mood_logs', {
     ...mood,
     user_id: userId
   });
-}
+};
 
-async function saveNote(userId, note) {
+window.saveNote = async function saveNote(userId, note) {
   await upsertRecord('notes', {
     ...note,
     user_id: userId,
     tags: JSON.stringify(note.tags)
   });
-}
+};
 
-async function deleteNote(id) {
+window.deleteNote = async function deleteNote(id) {
   await deleteRecord('notes', id);
-}
+};
 
-async function saveFocusSession(userId, session) {
+window.saveFocusSession = async function saveFocusSession(userId, session) {
   await upsertRecord('focus_sessions', {
     ...session,
     user_id: userId
   });
-}
+};
+
+/* ============================================================
+   EXPOSE LOAD PROFILE / CREATE PROFILE
+   ============================================================ */
+window.loadProfile = loadProfile;
+window.createProfile = createProfile;
