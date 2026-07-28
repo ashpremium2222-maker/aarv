@@ -73,21 +73,21 @@ async function createProfile(userId, name) {
   const profile = {
     id: userId,
     name: name || 'User',
-    xp: 340,
+    xp: 0,
     water_goal: 8,
     sleep_goal: 8,
-    water: 5,
-    sleep_hrs: 6.5,
+    water: 0,
+    sleep_hrs: 0,
     theme: 'dark',
     accent: 'gold',
     seen_onboarding: false,
     badges: JSON.stringify([
-      { id: 'b1', name: 'First Habit', ic: '🌱', earned: true },
-      { id: 'b2', name: '7-Day Streak', ic: '🔥', earned: true },
-      { id: 'b3', name: 'Early Bird', ic: '🌅', earned: true },
+      { id: 'b1', name: 'First Habit', ic: '🌱', earned: false },
+      { id: 'b2', name: '7-Day Streak', ic: '🔥', earned: false },
+      { id: 'b3', name: 'Early Bird', ic: '🌅', earned: false },
       { id: 'b4', name: 'Goal Getter', ic: '🎯', earned: false },
       { id: 'b5', name: '30-Day Streak', ic: '💎', earned: false },
-      { id: 'b6', name: 'Journal Keeper', ic: '✍️', earned: true },
+      { id: 'b6', name: 'Journal Keeper', ic: '✍️', earned: false },
       { id: 'b7', name: 'Deep Focus x10', ic: '🎧', earned: false },
       { id: 'b8', name: 'Level 10', ic: '👑', earned: false }
     ])
