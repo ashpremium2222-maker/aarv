@@ -125,7 +125,7 @@ function mkMoodHistory(){
 }
 function mkFocusHistory(){
   const arr=[];
-  for(let i=6;i>=0;i--){arr.push({date:daysAgoISO(i),minutes:Math.round(20+Math.random()*90)});}
+  for(let i=6;i>=0;i--){arr.push({id:uid(),date:daysAgoISO(i),minutes:Math.round(20+Math.random()*90)});}
   return arr;
 }
 
@@ -756,7 +756,7 @@ function focusTick(){
     clearInterval(focusTicker); focusTicker=null; f.running=false;
     if(f.mode==='focus'){
       const mins=Math.round(f.totalSeconds/60);
-      State.focusSessions.push({date:todayISO(),minutes:mins});
+      State.focusSessions.push({id:uid(),date:todayISO(),minutes:mins});
       addXP(30,`Focus session complete — +30 XP`);
       confetti();
     } else {
@@ -1326,7 +1326,7 @@ function bindView(){
     el.classList.add('btn-primary'); el.classList.remove('btn-ghost');
     el.dataset.selected='1';
   });
-  const saveMood=document.getElementById('saveMoodBtn'); if(saveMood) saveMood.onclick=()=>{
+  const saveMood=document.getElementById('saveMoodBtn'); if(saveMood) saveMood.onclick=async()=>{
     const sel=document.querySelector('[data-mood-emoji].btn-primary');
     const emoji= sel? sel.dataset.moodEmoji : '🙂';
     const energy=parseInt(document.getElementById('energyRange').value);
@@ -1335,6 +1335,7 @@ function bindView(){
     if(existing) Object.assign(existing,{emoji,energy,stress});
     else { State.moods.push({id:uid(),date:todayISO(),emoji,energy,stress}); if(State.moods.length>7) State.moods.shift(); }
     addXP(10,'Mood logged — +10 XP');
+    try{ await saveMoodLog(State._userId, State.moods.find(m=>m.date===todayISO())); }catch(e){ console.error('Mood save failed:',e); }
     queueSave();
     render();
   };
