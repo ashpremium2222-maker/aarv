@@ -44,6 +44,16 @@ window.onAuthStateChange = function onAuthStateChange(callback) {
   return supabase.auth.onAuthStateChange(callback);
 };
 
+window.signInWithGoogle = async function signInWithGoogle() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin
+    }
+  });
+  if (error) throw error;
+};
+
 /* ============================================================
    DATA LOADING
    ============================================================ */
