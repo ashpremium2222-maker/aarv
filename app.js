@@ -1440,7 +1440,7 @@ function showOnboarding(){
   const back=document.getElementById('onbBack'); if(back) back.onclick=()=>{onbStep--;showOnboarding();};
   document.getElementById('onbNext').onclick=()=>{
     if(onbStep<ONB_STEPS.length-1){ onbStep++; showOnboarding(); }
-    else { host.innerHTML=''; State.seenOnboarding=true; toast(`Welcome, ${State.user.name}!`); render(); }
+    else { host.innerHTML=''; State.seenOnboarding=true; toast(`Welcome, ${State.user.name}! +20 XP`,'sparkle'); addXP(20); render(); }
   };
 }
 
