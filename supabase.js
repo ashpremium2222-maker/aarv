@@ -101,6 +101,14 @@ async function createProfile(userId, name) {
   return data;
 }
 
+window.clearAllUserData = async function clearAllUserData(userId) {
+  const tables = ['habits','goals','tasks','journal_entries','mood_logs','notes','focus_sessions'];
+  await Promise.all(tables.map(t => supabase.from(t).delete().eq('user_id', userId)));
+  const { error: delErr } = await supabase.from('profiles').delete().eq('id', userId);
+  if (delErr) throw delErr;
+  await createProfile(userId, null);
+};
+
 async function loadData(table, userId) {
   const { data, error } = await supabase
     .from(table)

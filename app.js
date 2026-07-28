@@ -176,8 +176,8 @@ function applyLoadedData(data) {
     State.sleepGoal = data.profile.sleep_goal || 8;
     State.theme = data.profile.theme || 'dark';
     State.accent = data.profile.accent || 'gold';
-    State.water = data.profile.water || 5;
-    State.sleepHrs = data.profile.sleep_hrs || 6.5;
+    State.water = data.profile.water ?? 5;
+    State.sleepHrs = data.profile.sleep_hrs ?? 6.5;
     State.seenOnboarding = data.profile.seen_onboarding || false;
     if (data.profile.badges) {
       State.badges = typeof data.profile.badges === 'string'
@@ -1365,8 +1365,11 @@ function bindView(){
   document.querySelectorAll('[data-notif-toggle]').forEach(el=>el.onclick=()=>el.classList.toggle('on'));
   const exp=document.getElementById('exportBtn'); if(exp) exp.onclick=exportData;
   const imp=document.getElementById('importFile'); if(imp) imp.addEventListener('change',importData);
-  const rst=document.getElementById('resetBtn'); if(rst) rst.onclick=()=>{
-    if(confirm('This clears all data in this session. Continue?')){ location.reload(); }
+  const rst=document.getElementById('resetBtn'); if(rst) rst.onclick=async()=>{
+    if(confirm('Permanently delete ALL your data from the server? This cannot be undone.')){
+      try{ await clearAllUserData(State._userId); toast('All data reset'); location.reload(); }
+      catch(e){ toast('Reset failed: '+e.message,'error'); }
+    }
   };
   const so=document.getElementById('signOutBtn'); if(so) so.onclick=async()=>{
     try{ await signOut(); State._userId=null; showAuth(); }catch(e){ toast('Sign out failed'); }
