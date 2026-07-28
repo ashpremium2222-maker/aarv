@@ -120,7 +120,7 @@ function mkHistory(daysAgoArr){
 function mkMoodHistory(){
   const emojis=['😄','🙂','😐','😔','😄','🙂','🙂'];
   const arr=[];
-  for(let i=6;i>=0;i--){arr.push({date:daysAgoISO(i),emoji:emojis[6-i],energy:clamp(5+Math.round(Math.sin(i)*3),1,10),stress:clamp(5+Math.round(Math.cos(i)*3),1,10)});}
+  for(let i=6;i>=0;i--){arr.push({id:uid(),date:daysAgoISO(i),emoji:emojis[6-i],energy:clamp(5+Math.round(Math.sin(i)*3),1,10),stress:clamp(5+Math.round(Math.cos(i)*3),1,10)});}
   return arr;
 }
 function mkFocusHistory(){
@@ -1333,8 +1333,9 @@ function bindView(){
     const stress=parseInt(document.getElementById('stressRange').value);
     const existing=State.moods.find(m=>m.date===todayISO());
     if(existing) Object.assign(existing,{emoji,energy,stress});
-    else { State.moods.push({date:todayISO(),emoji,energy,stress}); if(State.moods.length>7) State.moods.shift(); }
+    else { State.moods.push({id:uid(),date:todayISO(),emoji,energy,stress}); if(State.moods.length>7) State.moods.shift(); }
     addXP(10,'Mood logged — +10 XP');
+    queueSave();
     render();
   };
 
