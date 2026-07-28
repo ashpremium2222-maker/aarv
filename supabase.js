@@ -104,9 +104,21 @@ async function createProfile(userId, name) {
 window.clearAllUserData = async function clearAllUserData(userId) {
   const tables = ['habits','goals','tasks','journal_entries','mood_logs','notes','focus_sessions'];
   await Promise.all(tables.map(t => supabase.from(t).delete().eq('user_id', userId)));
-  const { error: delErr } = await supabase.from('profiles').delete().eq('id', userId);
-  if (delErr) throw delErr;
-  await createProfile(userId, null);
+  await saveProfile(userId, {
+    name: 'User', xp: 0, water: 0, sleep_hrs: 0,
+    water_goal: 8, sleep_goal: 8, theme: 'dark', accent: 'gold',
+    seen_onboarding: false,
+    badges: JSON.stringify([
+      { id:'b1', name:'First Habit', ic:'🌱', earned:false },
+      { id:'b2', name:'7-Day Streak', ic:'🔥', earned:false },
+      { id:'b3', name:'Early Bird', ic:'🌅', earned:false },
+      { id:'b4', name:'Goal Getter', ic:'🎯', earned:false },
+      { id:'b5', name:'30-Day Streak', ic:'💎', earned:false },
+      { id:'b6', name:'Journal Keeper', ic:'✍️', earned:false },
+      { id:'b7', name:'Deep Focus x10', ic:'🎧', earned:false },
+      { id:'b8', name:'Level 10', ic:'👑', earned:false },
+    ])
+  });
 };
 
 async function loadData(table, userId) {
