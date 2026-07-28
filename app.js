@@ -1422,6 +1422,7 @@ const ONB_STEPS=[
   {t:'Welcome to Ascent',d:'One calm home for your habits, goals, focus, mood, and reflection — designed to feel like progress, not pressure.'},
   {t:'Build your constellation',d:'Every habit you complete lights up a point in your daily sky. Watch the pattern grow across the week.'},
   {t:'Your AI coach is always on',d:'Get a fresh, specific nudge each time you open the dashboard — grounded in what you\'ve actually logged.'},
+  {t:'Built with love',d:'it took founders 64hours to make this ~ AARV'},
 ];
 let onbStep=0;
 function showOnboarding(){
